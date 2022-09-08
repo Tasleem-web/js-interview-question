@@ -1,0 +1,14 @@
+1. Find the position of first duplicate element in a string.
+2. Concatenate two array and find the unique element from it.
+3. Input array [3,4,5] output array [20, 15,12]
+4. What is promise, how can you execute array of promise sequence by sequence- use generator concept
+5. How to build a npm package
+
+Interviewed two weeks ago. A fast process. The interviewer was pretty nice. Implement array prototype methods by yourself using JS.
+(Like flat, map, reduce, concat.....) Some basic concept of JS, Frontend framework.
+
+Best Improvement in ES6 vs previous versions
+React libraries I've worked with
+ES6 loops
+
+

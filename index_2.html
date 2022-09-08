@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .blocks {
+        flex: 1 300px;
+        height: 300px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        /* background: red; */
+        font-size: 40px;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="blocks">
+        <img
+          src="//cdn.fcglcdn.com/brainbees/images/products/280x338/9508448a.webp"
+        />
+      </div>
+      <div class="blocks">
+        <img
+          src="//cdn.fcglcdn.com/brainbees/images/products/280x338/9508447a.webp"
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/9508446a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/9508445a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/8780624a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/10567121a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/10825137a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/8780623a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/8780625a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/10567120a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/10567119a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/9508449a.webp"
+          src=""
+        />
+      </div>
+      <div class="blocks">
+        <img
+          data-src="//cdn.fcglcdn.com/brainbees/images/products/280x338/10825136a.webp"
+          src=""
+        />
+      </div>
+    </div>
+
+    <script>
+      // Helper function to check if element is in viewport
+      const isInViewport = function (elem) {
+        const bounding = elem.getBoundingClientRect();
+        return (
+          bounding.top >= 0 &&
+          bounding.left >= 0 &&
+          bounding.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          bounding.right <=
+            (window.innerWidth || document.documentElement.clientWidth)
+        );
+      };
+
+      // Debounce a function call
+      const debounce = (func, delay) => {
+        let inDebounce;
+        return function () {
+          const context = this;
+          const args = arguments;
+          clearTimeout(inDebounce);
+          inDebounce = setTimeout(() => func.apply(context, args), delay);
+        };
+      };
+
+      // Function which will make the API call
+      const getBlocks = function () {
+        blocks.forEach((block, index) => {
+          if (isInViewport(block)) {
+            if (index > 1) {
+              block
+                .querySelector("img")
+                .setAttribute(
+                  "src",
+                  block.querySelector("img").getAttribute("data-src")
+                );
+            }
+          }
+        });
+      };
+
+      // Get all the products
+      const blocks = document.querySelectorAll(".blocks");
+
+      // Assign the event listener
+      //   window.addEventListener("scroll", debounce(getBlocks, 1000), false);
+      window.addEventListener("scroll", debounce(getBlocks, 20), false);
+    </script>
+  </body>
+</html>

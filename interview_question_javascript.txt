@@ -1,0 +1,61 @@
+function closest1(arr){
+    let closestIndex=0;
+    let diff = Number.MAX_VALUE;
+    for(let i=0;i<arr.length-1;i++){
+        let abs = arr[i] > 0 ? arr[i] : -arr[i];
+        if(abs < diff){
+            diff = abs;
+            closestIndex = i
+        }else if(abs == diff && arr[i]>0 && arr[closestIndex]<0){
+            closestIndex = i
+        }
+        
+    }
+    console.log(arr[closestIndex]);
+}
+
+let arr = [ 1, 2, 4, 5, 6, 6, 8, 9 ];
+let arr2 =  [10,-5,5,2,7,-4,28,65,95,85,12,45];
+closest1(arr2)
+
+
+function factorial(n){
+
+    if(n==0 || n==1) {
+        return n
+    }else {
+        return n * factorial(n-1);
+    }
+}
+
+iterative way
+function factorial(n){
+
+	let fact = 1;
+	for(let i=1;i<=n;i++){
+		fact = fact * i;
+	}
+	return fact;
+}
+
+
+https://www.toptal.com/javascript/es6-class-chaos-keeps-js-developer-up#:~:text=Prototypes%20vs.,is%20itself%20an%20object%20instance.
+
+Prototypes vs. Classes:
+
+The most important difference between class- and prototype-based inheritance is that a class defines a type which can be instantiated at runtime, whereas a prototype is itself an object instance.
+
+
+Currying:
+
+Currying is checking method to make sure that you get everything you need before you proceed
+It helps you to avoid passing the same variable again and again
+
+Currying is an advanced technique of working with functions.
+Currying is a transformation of functions that translates a function from callable as f(a, b, c) into callable as f(a)(b)(c).
+Currying doesn’t call a function. It just transforms it.
+
+example :
+let sum = a => b => b ? sum(a + b) : a;
+console.log(sum(1)(2)(3)(4)());
+ 
