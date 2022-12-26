@@ -1,16 +1,31 @@
-function removeDup(str) {
-    let newArr = [];
-    newArr.push(str[0]);
-    for (let i = 1; i < str.length; i++) {
-        if (!((str[i - 1] === str[i]) || (str[i] === str[i + 1]))) {
-            newArr.push(str[i])
+// not valid in some scenarios
+// function removeDup(str) {
+//     let newArr = [];
+//     newArr.push(str[0]);
+//     for (let i = 1; i < str.length; i++) {
+//         if (!((str[i - 1] === str[i]) || (str[i] === str[i + 1]))) {
+//             newArr.push(str[i])
+//         }
+//     }
+//     return newArr.join("")
+// }
+
+function removeAdjacent(str) {
+    let res = [];
+    for (let i = 0; i < str.length; i++) {
+        if (str[i] !== res[res.length - 1]) {
+            res.push(str[i])
+        } else {
+            res.pop();
         }
     }
-    return newArr.join("")
+    return res.join("")
 }
 
+
+console.log(removeAdjacent('azxxxzy'));
+console.log(removeDup('azxxxzy'));
 // console.log(removeDup('j')); //acb
-// console.log(removeDup('azxxxzy')); //acb
 console.log(removeDup('aaaacddddcappp')); //acb
 
 

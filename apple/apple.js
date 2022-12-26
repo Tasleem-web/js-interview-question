@@ -83,14 +83,14 @@
 // // let str = "facebook";
 // // console.log(firstDuplicate(str));
 
-// function concateTwoArrayAndFindUniqueElement(arr1, arr2) {
+// function concatTwoArrayAndFindUniqueElement(arr1, arr2) {
 //     let allArr = [...arr1, ...arr2];
 //     return allArr.filter((item, index) => allArr.indexOf(item) == index);
 // }
 
 // // let myIceCream = ["chocolate", "vanilla", "pistachio"];
 // // let yourIceCream = ["spumoni", "chocolate", "coconut"];
-// // console.log(concateTwoArrayAndFindUniqueElement(myIceCream, yourIceCream));
+// // console.log(concatTwoArrayAndFindUniqueElement(myIceCream, yourIceCream));
 
 // [3,4,5]=> [4*5, 3*5, 3*4] output [20, 15,12]
 // function multiplyOthers(arr) {

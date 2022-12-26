@@ -120,6 +120,14 @@ function reverseStr(str) {
 // // console.log(multiply(1, 2).finalCount)
 // console.log(multiply(1, 2)(3, 2).finalCount)
 
+const multiply = (...args) => (
+    args.length < 3 ? multiply.bind(null, ...args) : args.reduce((a, b) => a * b)
+)
+
+console.log(multiply(2, 3, 4));
+console.log(multiply(2, 3)(4));
+console.log(multiply(2)(3)(4));
+console.log(multiply(2)(3, 4));
 
 // function sum() {
 //     var count = 0;    // use previous result
@@ -157,9 +165,9 @@ function reverseStr(str) {
 // LootItems();
 // var animal = "lion";
 // var favoriteAnimal = function () {
-//     console.log("Original favourite animal: " + this.animal);
+//     console.log("Original favorite animal: " + this.animal);
 //     var animal = "giraffe";
-//     console.log("New favourite animal: " + animal);
+//     console.log("New favorite animal: " + animal);
 // };
 // favoriteAnimal()
 
@@ -186,7 +194,7 @@ function reverseStr(str) {
 // function onsubmit(event) {
 //     event.preventDefault();
 
-//     event.stopProgogation()
+//     event.stopPropagation()
 //     let fname = document.getElementById('fname').value;
 //     console.log(fname);
 // }
