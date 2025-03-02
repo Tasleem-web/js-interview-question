@@ -24,23 +24,23 @@
 // input.addEventListener('keydown', () => throttle(apiCall, 1000));
 // --------------------------------------------------------
 
-// Object.prototype.clone = function () {
-//     let data = (this instanceof Array) ? [] : {};
-//     for (const i in this) {
-//         if (i != 'clone') {
-//             if (typeof this[i] && typeof this[i] == 'object') {
-//                 data[i] = this[i].clone();
-//             } else {
-//                 data[i] = this[i]
-//             }
-//         }
-//     }
-//     return data;
-// }
-// var obj = { name: "Tasleem", address: { street: 'abc', pin: 1234 } };
-// console.log("obj", obj);
-// var copiedObj = obj.clone();
-// console.log("copiedObj", copiedObj);
+Object.prototype.clone = function () {
+    let data = (this instanceof Array) ? [] : {};
+    for (const i in this) {
+        if (i != 'clone') {
+            if (typeof this[i] && typeof this[i] == 'object') {
+                data[i] = this[i].clone();
+            } else {
+                data[i] = this[i]
+            }
+        }
+    }
+    return data;
+}
+var obj = { name: "Tasleem", address: { street: 'abc', pin: 1234 } };
+console.log("obj", obj);
+var copiedObj = obj.clone();
+console.log("copiedObj", copiedObj);
 // -------------------------
 // var arr = [1, [2, [3]]];
 // console.log("arr", arr);

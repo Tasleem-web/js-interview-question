@@ -1,12 +1,14 @@
-// const memoize = (callback) => {
-//     const cache = {};
-//     return (...args) => {
-//         let convertToString = JSON.stringify(args);
-//         const result = cache[convertToString] || callback(...args);
-//         cache[convertToString] = result;
-//         return result
-//     }
-// }
+// https://javascriptinterviewquestions.com/2020/04/add123-in-javascript-currying-interview.html
+
+const memoize = (callback) => {
+    const cache = {};
+    return (...args) => {
+        let convertToString = JSON.stringify(args);
+        const result = cache[convertToString] || callback(...args);
+        cache[convertToString] = result;
+        return result
+    }
+}
 
 // const add = (x, y) => (x + y);
 // const memoizeAdd = memoize(add);
@@ -160,7 +162,7 @@ console.log(multiply(2)(3, 4));
 //         }, index * 1000);
 //     }
 //     closure(i);
-// }
+//  }
 // }
 // LootItems();
 // var animal = "lion";
@@ -171,7 +173,7 @@ console.log(multiply(2)(3, 4));
 // };
 // favoriteAnimal()
 
-// let sum = a => b => b ? sum(a * b) : a;
+// let sum = a => b => b ? sum(a + b) : a;
 
 // let sum = function (a) {
 //     return function (b) {
@@ -182,14 +184,53 @@ console.log(multiply(2)(3, 4));
 //     }
 // }
 
+// Case 1: add(1)(2)(3)
+function add(a) {
+    return function (b) {
+        return function (c) {
+            return a + b + c
+        }
+    }
+}
+
+// Case 2: add(1)(2)(3)…(n)()
+function add(a) {
+    return function (b) {
+        if (b) {
+            return add(a + b)
+        }
+        return a
+    }
+}
+
+// Case 3: sum(1,2)(3,4)
+function sum(a, b) {
+    return function (c, d) {
+        return a + b + c + d
+    }
+}
+
+// Case 4: add(1,2..n)(5,6…n)…(n)()
+function add(...args) {
+    let a = args.reduce((acc, cur) => acc + cur, 0);
+    return function (...args) {
+        let b = args.reduce((acc, cur) => acc + cur, 0)
+        if (b) return add(a + b);
+        return a;
+    }
+}
+
+console.log(add(1, 2, 3)(4, 5)(6)());
+
+
 // console.log(sum(1)(2)(3)(4)());
-// function sum(a) {
+// function mul(a) {
 //     return function (b) {
 //         return a * b;
 //     }
 // }
 
-// console.log(sum(2)(2));
+// console.log(mul(2)(2));
 
 // function onsubmit(event) {
 //     event.preventDefault();
