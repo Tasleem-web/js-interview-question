@@ -116,23 +116,28 @@ Array.prototype.myEvery = function (callback) {
 // console.log(result);
 
 Array.prototype.myFlat = function (depth = 1) {
-    let arr = [];
-    for (let i = 0; i < this.length; i++) {
-        if (Array.isArray(this[i])) {
-            if (i === depth - 1) {
-                arr = [...arr, ...myFlat(this[i])];
-                return arr;
+    let newArr = [];
+
+    const flatten = (arr, depth) => {
+        if (depth < 1) {
+            return arr;
+        }
+        for (let i = 0; i < arr.length; i++) {
+            if (Array.isArray(arr[i])) {
+                const flattened = flatten(arr[i], depth - 1) || [];
+                flattened.forEach(item => newArr.push(item));
             } else {
-                arr = [...arr, ...myFlat(this[i])];
+                newArr.push(arr[i]);
             }
-        } else {
-            arr.push(this[i])
         }
     }
-    return arr;
+
+    flatten(this, depth);
+    return newArr;
 }
 
 let arr = [1, 2, 3, [4, 5, [6]]];
 let result = arr.myFlat(2);
-console.log(result);
+console.log(result); // [1, 2, 3, 4, 5, 6]
+
 

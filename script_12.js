@@ -184,6 +184,7 @@ console.log(multiply(2)(3, 4));
 //     }
 // }
 
+// Currying types
 // Case 1: add(1)(2)(3)
 function add(a) {
     return function (b) {
