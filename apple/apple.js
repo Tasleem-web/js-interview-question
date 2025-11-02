@@ -748,6 +748,8 @@ String.prototype.hasUniqueChars = function () {
 console.log("abcdef".hasUniqueChars()); // true
 console.log("hello".hasUniqueChars()); // false
 
+
+
 // Adding a method to find the longest repeating substring in a string
 String.prototype.longestRepeatingSubstring = function () {
     let longest = "";
@@ -781,6 +783,309 @@ String.prototype.longestCommonPrefix = function (arr) {
 console.log("flower".longestCommonPrefix(["flower", "flow", "flight"])); // "fl"
 console.log("dog".longestCommonPrefix(["dog", "racecar", "car"])); // ""
 console.log("abc".longestCommonPrefix(["abc", "abcd", "abcde"])); // "abc"
+
+/**
+ * Problem: Implement a Least Recently Used (LRU) Cache
+ * Explanation: Design a data structure that supports get and put operations in O(1) time.
+ */
+class LRUCache {
+    constructor(capacity) {
+        this.capacity = capacity;
+        this.cache = new Map();
+    }
+
+    get(key) {
+        if (!this.cache.has(key)) return - 1;
+        const value = this.cache.get(key);
+        this.cache.delete(key);
+        this.cache.set(key, value);
+        return value;
+    }
+
+    put(key, value) {
+        if (this.cache.has(key)) {
+            this.cache.delete(key);
+        }
+        this.cache.set(key, value);
+        if (this.cache.size > this.capacity) {
+            const firstKey = this.cache.keys().next().value;
+            this.cache.delete(firstKey);
+        }
+    }
+
+}
+
+// Example usage:
+const lru = new LRUCache(2);
+lru.put(1, 1);
+lru.put(2, 2);
+console.log(lru.get(1)); // 1
+lru.put(3, 3); // evicts key 2
+console.log(lru.get(2)); // -1
+lru.put(4, 4); // evicts key 1
+console.log(lru.get(1)); // -1
+console.log(lru.get(3)); // 3
+console.log(lru.get(4)); // 4
+
+class LRUCache {
+    constructor(limit = 10) {
+        this.cache = new Map();
+        this.limit = limit;
+    }
+
+    // get
+    get(key) {
+        if (!this.cache.has(key)) return null;
+        const value = this.cache.get(key);
+        this.cache.delete(key);
+        this.cache.set(key, value);
+        return value;
+    }
+
+    // set
+    set(key, value) {
+        if (this.cache.size >= this.limit) {
+            const oldestKey = this.cache.keys().next().value;
+            console.log(oldestKey)
+            this.cache.delete(oldestKey);
+        }
+        this.cache.set(key, value);
+    }
+
+    has(key) {
+        if (!key) return null;
+        return this.cache.get(key) ? true : false;
+    }
+}
+
+function customkeyGenerator(args) {
+    return args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join('-');
+}
+
+const memoizeWithLRUCache = (fn, limit) => {
+    const cache = new LRUCache(limit);
+    return (...args) => {
+        const key = customkeyGenerator(args);
+        if (cache.has(key)) {
+            console.log('From Cache...');
+            return cache.get(key);
+        } else {
+            console.log('Computing...');
+            const result = fn(...args);
+            cache.set(key, result);
+            return result;
+        }
+    }
+}
+
+const slowFunction = (num) => {
+    for (let index = 0; index < 1e6; index++) { }
+    return num * 2
+}
+
+const memoizedFunction = memoizeWithLRUCache(slowFunction, 5)
+console.log(memoizedFunction(5));
+console.log(memoizedFunction(5));
+
+/**
+ * Problem: Find all subsets (the power set) of a given array
+ * Explanation: Return all possible subsets of the array (including the empty set and the set itself).
+ */
+function subsets(nums) {
+    const result = [];
+    const backtrack = (path, start) => {
+        result.push([...path]);
+        for (let i = start; i < nums.length; i++) {
+            path.push(nums[i]);
+            backtrack(path, i + 1);
+            path.pop();
+        }
+    };
+    backtrack([], 0);
+    return result;
+}
+
+// Example usage:
+console.log(subsets([1, 2, 3]));
+// Output: [[], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]]
+
+/**
+ * Problem: Merge Intervals
+ * Explanation: Given an array of intervals, merge all overlapping intervals.
+ */
+function mergeIntervals(intervals) {
+    if (!intervals.length) return [];
+    intervals.sort((a, b) => a[0] - b[0]);
+    const merged = [intervals[0]];
+    for (let i = 1; i < intervals.length; i++) {
+        const prev = merged[merged.length - 1];
+        const curr = intervals[i];
+        if (curr[0] <= prev[1]) {
+            prev[1] = Math.max(prev[1], curr[1]);
+        } else {
+            merged.push(curr);
+        }
+    }
+    return merged;
+}
+
+// Example usage:
+console.log(mergeIntervals([[1, 3], [2, 6], [8, 10], [15, 18]]));
+// Output: [[1,6],[8,10],[15,18]]
+
+/**
+ * Problem: Find the minimum in a rotated sorted array
+ * Explanation: Given a rotated sorted array, find the minimum element.
+ */
+function findMin(nums) {
+    let left = 0, right = nums.length - 1;
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2);
+        if (nums[mid] > nums[right]) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    return nums[left];
+}
+
+// Example usage:
+console.log(findMin([3, 4, 5, 1, 2])); // 1
+console.log(findMin([4, 5, 6, 7, 0, 1, 2])); // 0
+
+/**
+ * Problem: Implement a Binary Search Tree (BST) with insert and search
+ */
+class TreeNode {
+    constructor(val) {
+        this.val = val;
+        this.left = this.right = null;
+    }
+}
+
+class BST {
+    constructor() {
+        this.root = null;
+    }
+
+    insert(val) {
+        const insertNode = (node, val) => {
+            if (!node) return new TreeNode(val);
+            if (val < node.val) node.left = insertNode(node.left, val);
+            else node.right = insertNode(node.right, val);
+            return node;
+        };
+        this.root = insertNode(this.root, val);
+    }
+
+    search(val) {
+        let node = this.root;
+        while (node) {
+            if (val === node.val) return true;
+            node = val < node.val ? node.left : node.right;
+        }
+        return false;
+    }
+}
+
+// Example usage:
+const bst = new BST();
+bst.insert(5);
+bst.insert(3);
+bst.insert(7);
+console.log(bst.search(3)); // true
+console.log(bst.search(8)); // false
+
+/**
+ * Problem: Retry a Promise-returning function up to N times if it fails.
+ * Solution:
+ */
+function retryPromise(fn, retries = 3, delay = 100) {
+    return new Promise((resolve, reject) => {
+        function attempt(count) {
+            fn()
+                .then(resolve)
+                .catch(err => {
+                    if (count <= 0) return reject(err);
+                    setTimeout(() => attempt(count - 1), delay);
+                });
+        }
+        attempt(retries);
+    });
+}
+
+// Example usage:
+let count = 0;
+function unreliable() {
+    return new Promise((resolve, reject) => {
+        count++;
+        if (count < 3) reject("fail");
+        else resolve("success");
+    });
+}
+retryPromise(unreliable, 5, 50).then(console.log).catch(console.error); // "success"
+
+/**
+ * Problem: Sequentially run an array of promise-returning functions.
+ * Solution:
+ */
+function runSequentially(fns) {
+    return fns.reduce(
+        (prev, fn) => prev.then(res => fn().then(r => [...res, r])),
+        Promise.resolve([])
+    );
+}
+
+// Example usage:
+const p1 = () => Promise.resolve(1);
+const p2 = () => new Promise(res => setTimeout(() => res(2), 100));
+const p3 = () => Promise.resolve(3);
+runSequentially([p1, p2, p3]).then(console.log); // [1, 2, 3]
+
+/**
+ * Problem: Timeout a promise if it takes too long.
+ * Solution:
+ */
+function promiseTimeout(promise, ms) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))
+    ]);
+}
+
+// Example usage:
+promiseTimeout(new Promise(res => setTimeout(() => res("done"), 100)), 200)
+    .then(console.log); // "done"
+promiseTimeout(new Promise(res => setTimeout(() => res("done"), 200)), 100)
+    .catch(console.error); // Error: Timeout
+
+/**
+ * Problem: Limit concurrency of promise-returning functions.
+ * Solution:
+ */
+function promisePool(tasks, limit) {
+    let i = 0;
+    const results = [];
+    const run = () => {
+        if (i >= tasks.length) return Promise.resolve();
+        const idx = i++;
+        return tasks[idx]().then(res => {
+            results[idx] = res;
+            return run();
+        });
+    };
+    return Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, run)).then(() => results);
+}
+
+// Example usage:
+const tasks = [
+    () => Promise.resolve(1),
+    () => new Promise(res => setTimeout(() => res(2), 100)),
+    () => Promise.resolve(3)
+];
+promisePool(tasks, 2).then(console.log); // [1,2,3]
+
 
 
 // Polyfill for Promise.all
@@ -1035,3 +1340,694 @@ console.log(trie.search("app")); // false
 console.log(trie.startsWith("app")); // true
 trie.insert("app");
 console.log(trie.search("app")); // true
+
+// Array chunks
+function chunkArray(arr, size) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+}
+
+
+function maxDigitSumLessThan(num) {
+    let maxSum = 0;
+    let result = num - 1;
+
+    for (let i = num - 1; i > 0; i--) {
+        let sum = i.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+        if (sum > maxSum) {
+            maxSum = sum;
+            result = i;
+        }
+    }
+
+    return result;
+}
+
+// Example usage:
+let number = 899;
+let result = maxDigitSumLessThan(number);
+console.log(`The largest number less than ${number} with the maximum digit sum is ${result}`);
+
+
+///
+const route = {
+    '/': () => document.body.innerHTML = '<h1>Home</h1>',
+    'about': () => document.body.innerHTML = '<h1>About</h1>',
+    'contact': () => document.body.innerHTML = '<h1>Contact</h1>',
+}
+
+
+function router() {
+    const path = location.hash.replace('#', '') || '/';
+    if (route[path]) route[path]();
+    else document.body.innerHTML = '<h1>404 - Not found</h1>'
+}
+
+// window.addEventListener('hashchange', router);
+window.addEventListener('load', router);
+
+///
+const callApi = () => console.log('API called');
+
+let debounceTimer;
+const debounce = (callback, delay) => {
+    window.clearTimeout(debounceTimer);
+    debounceTimer = window.setTimeout(callback, delay);
+}
+
+
+// <input id="input" />
+input.addEventListener("keydown", debounce(callApi, 3000));
+
+///
+function areAnagrams(str1, str2) {
+    return str1.length === str2.length ? str1.split("").sort().join("") === str2.split("").sort().join("") : false;
+}
+
+console.log(areAnagrams("listen", "silent")); // Output: true
+console.log(areAnagrams("hello", "world"));   // Output: false
+
+//
+class TimeTolive {
+    constructor(ttl) {
+        this.ttl = ttl;
+        this.cache = new Map();
+    }
+
+    //set
+    set(key, value) {
+        const now = Date.now();
+        const expiry = now + this.ttl;
+        this.cache.set(key, { value, expiry });
+    }
+
+    //get
+    get(key) {
+        const now = Date.now();
+        const cachedItem = this.cache.get(key);
+
+        if (cachedItem && cachedItem.expiry > now) {
+            return cachedItem.value;
+        } else {
+            this.cache.delete(key);
+            return null
+        }
+    }
+}
+
+
+const cache = new TimeTolive(5000); // TTL of 5 seconds
+cache.set('foo', 'bar');
+console.log(cache.get('foo')); // Output: 'bar'
+setTimeout(() => console.log(cache.get('foo')), 6000); // Output: null (expired)
+
+//
+if (!String.prototype.capitalize) {
+    String.prototype.capitalize = function () {
+        // 1. solutions
+        // return this.replace(/(\b\w)/g, (match) => match.toUpperCase())
+
+        // 2.solutions
+        return this.split(' ').map(word => word.charAt(0).toUpperCase() + slice(1)).join(" ");
+
+    }
+}
+console.log("this is epam system infosys".capitalize());
+
+// composition function
+
+const add = x => x + 1;
+const multiply = x => x * 2;
+const subtract = x => x - 3;
+
+function composition(...fns) {
+    return function final(initialValue) {
+        let result = initialValue;
+        for (const fn of fns) {
+            result = fn(result)
+        }
+        return result;
+    }
+}
+const result = composition(add, multiply, subtract)(2);
+console.log(result);
+
+//
+function deepCopy(obj, map = new Map()) {
+    // If the object is a primitive type, return it
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+
+    // if the object is already exists
+    if (map.has(obj)) {
+        return map.get(obj);
+    }
+
+    // if the obj is Array
+    if (obj instanceof Array) {
+        const copy = [];
+        map.set(obj, copy);
+        obj.forEach((item, index) => {
+            copy[index] = deepCopy(item, map);
+        });
+        return copy;
+    }
+
+    // if the obj is object
+    if (obj instanceof Object) {
+        const copy = {};
+        map.set(obj, copy);
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                copy[key] = deepCopy(obj[key], map);
+            }
+        }
+        return copy;
+    }
+
+    // if the obj is Date
+    if (obj instanceof Date) {
+        return new Date(obj);
+    }
+
+    // if the obj is Function
+    if (typeof obj == 'function') {
+        const funcCopy = function (...args) {
+            return obj.apply(this, args);
+        }
+        map.set(obj, funcCopy);
+        return funcCopy;
+    }
+
+    // if the obj is RegExp
+    if (obj instanceof RegExp) {
+        map.set(obj, new RegExp(obj));
+        return new RegExp(obj);
+    }
+
+    // error if object is not support
+    throw new Error('Object type is not supported');
+}
+
+
+
+const original = {
+    name: 'Epam',
+    age: 30,
+    address: {
+        city: 'Minsk',
+        street: 'Kuprevicha'
+    },
+    employees: ['Alex', 'John', 'Jane'],
+    date: new Date(),
+    greet: function () {
+        console.log(Company name: ${ this.name });
+    }
+}
+
+const copy = deepCopy(original);
+console.log(copy);
+copy.greet();
+
+//
+
+function findDuplicates(arr) {
+    const set = new Set();
+    let dupSet = new Set();
+    for (let num of arr) {
+        if (!set.has(num)) {
+            set.add(num)
+        } else {
+            dupSet.add(num)
+        }
+    }
+    return [...dupSet];
+}
+
+console.log(findDuplicates([1, 2, 3, 2, 4, 5, 6, 3]));
+
+//
+
+const flatten = (arr) => {
+    return arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatten(val) : val), []);
+}
+
+const arr = [1, [2, [3, 4, [6, [7, [8, [9, [10]]]]]]], 5];
+const flt = flatten(arr).sort((a, b) => a - b);
+console.log(flt)
+
+///
+class QueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    select(fields) {
+        this.query.select = fields;
+        return this;
+    }
+
+    from(table) {
+        this.query.from = table;
+        return this;
+    }
+
+    where(condition) {
+        this.query.where = condition;
+        return this;
+    }
+
+    orderBy(field, direction) {
+        this.query.orderBy = { field, direction };
+        return this;
+    }
+
+    build() {
+        return this.query;
+    }
+}
+
+// Usage
+const query = new QueryBuilder()
+    .select(['name', 'age'])
+    .from('users')
+    .where({ age: { $gt: 18 } })
+    .orderBy('name', 'asc')
+    .build();
+
+console.log(query);
+// Output: { select: ['name', 'age'], from: 'users', where: { age: { $gt: 18 } }, orderBy: { field: 'name', direction: 'asc' } }
+
+// using functional programming
+
+function QueryBuilder() {
+    this.query = {};
+}
+
+QueryBuilder.prototype.select = function (fields) {
+    this.query.select = fields;
+    return this;
+};
+
+QueryBuilder.prototype.from = function (table) {
+    this.query.from = table;
+    return this;
+};
+
+QueryBuilder.prototype.where = function (condition) {
+    this.query.where = condition;
+    return this;
+};
+
+QueryBuilder.prototype.orderBy = function (field, direction) {
+    this.query.orderBy = { field: field, direction: direction };
+    return this;
+};
+
+QueryBuilder.prototype.build = function () {
+    return this.query;
+};
+
+// Usage
+var query = new QueryBuilder()
+    .select(['name', 'age'])
+    .from('users')
+    .where({ age: { $gt: 18 } })
+    .orderBy('name', 'asc')
+    .build();
+
+console.log(query);
+// Output: { select: ['name', 'age'], from: 'users', where: { age: { $gt: 18 } }, orderBy: { field: 'name', direction: 'asc' } }
+
+
+////
+
+function digitSum(num) {
+    return num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+}
+
+// Example usage:
+let number = 999; // You can change this to any number
+console.log(The digit sum of ${ number } is ${ digitSum(number) });
+
+function largestNumberWithMaxDigitSum(digits) {
+    let number = '9'.repeat(digits);
+    return parseInt(number);
+}
+
+// Example usage:
+let digits = 3; // Number of digits
+let largestNumber = largestNumberWithMaxDigitSum(digits);
+console.log(The largest number with ${ digits } digits is ${ largestNumber });
+console.log(The digit sum of ${ largestNumber } is ${ digitSum(largestNumber) });
+
+//
+
+// Creating a dedicated web worker
+const worker = new Worker('./worker.js');
+
+// Sending a message to the worker
+worker.postMessage('Hello, Worker!');
+
+// Receiving a message from the worker
+worker.onmessage = function (event) {
+    console.log('Message from Worker:', event.data);
+};
+
+//
+// function memoise(fn) {
+//     const cache = new Map();
+
+//     return function(...args){
+//      const key = JSON.stringify(args);
+//         if(cache.has(key)){
+//             console.log("cache...")
+//             return cache.get(key);
+//         }else{
+//         const result = fn(...args);
+//             cache.set(key, result)
+//             console.log('recalculating...')
+//             return result
+//         }
+//     }
+// }
+
+// const add = (x, y) => x+y;
+// const memoizeFn = memoise(add)
+// console.log(memoizeFn(5,5))
+// console.log(memoizeFn(5,5))
+
+
+function memoizeFn(fn) {
+    const cache = new Map();
+    return function (...args) {
+        const key = JSON.stringify(args);
+
+        if (cache.has(key)) {
+            console.log('from cache...');
+            return cache.get(key);
+        } else {
+            const result = fn(...args);
+            cache.set(key, result);
+            console.log('computing result...');
+            return result;
+        }
+    }
+}
+
+
+const add = (x, y) => x + y;
+const memoize = memoizeFn(add);
+console.log(memoize(1, 2)); // computed value
+console.log(memoize(1, 2)); // cache value
+console.log(memoize(5, 10)); // computed valu
+console.log(memoize(5, 10));// cache value
+
+//
+
+const pipe = (...fns) => (initialValue) => fns.reduce((acc, fn) => fn(acc), initialValue)
+const add = (x) => x + 2; // 10 +2 =12
+const sub = (x) => x - 3; // 12 -3 = 9
+const mul = (x) => x * 2; // 9 * 2 = 18
+
+const pipeFn = pipe(add, sub, mul)(10);
+
+console.log(pipeFn);
+
+//
+
+function customPromiseAll(promises) {
+    return new Promise((resolve, reject) => {
+        //  store promises
+        let result = [];
+        // count the resolved promise
+        let completedPromises = 0;
+
+        // make loop to resolve the promise
+        promises.forEach((promise, index) => {
+            // need the promise to resolve the iterable promise
+            Promise.resolve(promise).then(resp => {
+                result[index] = resp;
+                completedPromises++;
+
+                //  check if completedPromises is equal to promise.length
+                if (completedPromises == promises.length) {
+                    resolve(result);
+                }
+            })
+                .catch(reject);
+        })
+    })
+}
+
+let promise1 = Promise.resolve(3);
+let promise2 = Promise.reject('Error occured');
+let promise3 = Promise.resolve(5);
+
+customPromiseAll([promise1, promise2, promise3])
+    .then((values) => {
+        console.log(values);
+    })
+    .catch((error) => {
+        console.error(error); // "Error occurred"
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function customPromiseAll(promises) {
+//     return new Promise((resolve, reject) => {
+//         let results = [];
+//         let completedPromises = 0;
+//         promises.forEach((promise, index) => {
+//            Promise.resolve(promise)
+//              .then((value) => {
+//                 results[index] = value;
+//                 completedPromises += 1;
+//                 if(promises.length === completedPromises) resolve(results);
+//             })
+//             .catch(err => reject(err))
+//         })
+//         if(promises.length === 0) resolve(results)
+//     })
+// }
+
+// let promise1 = Promise.resolve(3);
+// let promise2 = Promise.reject('Error occured');
+// let promise3 = new Promise((resolve, reject) => {
+//   setTimeout(resolve, 100, 'foo');
+// });
+
+// customPromiseAll([promise1, promise2, promise3])
+//   .then((values) => {
+//     console.log(values);
+//   })
+//   .catch((error) => {
+//     console.error(error); // "Error occurred"
+//   });
+
+//
+function customPromiseRace(promises) {
+    return new Promise((resolve, reject) => {
+        promises.forEach((promise, index) => {
+            Promise.resolve(promise).then(resolve).catch(reject);
+        })
+    })
+}
+
+let promise1 = Promise.resolve(3);
+let promise2 = Promise.reject('Error occured.');
+
+customPromiseRace([promise2, promise1])
+    .then(data => console.log(data))
+    .catch(err => console.log(err))
+//
+function customPromiseAny(promises) {
+    return new Promise((resolve, reject) => {
+        let errors = [];
+        let rejectedPromises = 0;
+
+        promises.forEach((promise, index) => {
+            Promise.resolve(promise)
+                .then((value) => {
+                    resolve(value); // Resolve as soon as one promise resolves
+                })
+                .catch((error) => {
+                    errors[index] = error;
+                    rejectedPromises += 1;
+
+                    if (rejectedPromises === promises.length) {
+                        reject(new AggregateError(errors, "All promises were rejected"));
+                    }
+                });
+        });
+
+        if (promises.length === 0) {
+            reject(new AggregateError([], "All promises were rejected"));
+        }
+    });
+}
+
+// Example usage:
+let promise1 = new Promise((resolve, reject) => {
+    setTimeout(reject, 100, 'Error 1');
+});
+let promise2 = new Promise((resolve, reject) => {
+    setTimeout(reject, 200, 'Error 2');
+});
+let promise3 = new Promise((resolve, reject) => {
+    setTimeout(resolve, 300, 'Success');
+
+    customPromiseAny([promise3, promise1, promise2])
+        .then((value) => {
+            console.log(value); // "Success"
+        })
+        .catch((error) => {
+            console.error(error.errors); // ["Error 1", "Error 2"]
+        });
+})
+
+///
+class PubSub {
+    // constructor for subscriber\
+    constructor() {
+        this.subscribers = {};
+    }
+
+    // subscriber, event and callback
+    subscriber(event, callback) {
+        if (!this.subscribers[event]) {
+            this.subscribers[event] = [];
+        }
+        this.subscribers[event].push(callback);
+    }
+
+    // unsubscriber
+    unsubscriber(event, callback) {
+        if (!this.subscribers[event]) return;
+        this.subscribers[event] = this.subscribers[event].filter(cb => cb !== callback);
+    }
+
+    publish(event, data) {
+        if (!this.subscribers[event]) return;
+        this.subscribers[event].forEach(cb => cb(data))
+
+    }
+}
+
+const pubSub = new PubSub();
+const onMessage = (data) => console.log(Recieved message ${ data });
+const event = 'message';
+pubSub.subscriber(event, onMessage)
+pubSub.publish(event, 'Hello PubSub');
+
+pubSub.unsubscriber(event, onMessage);
+pubSub.publish(event, 'Hello again');
+
+///
+const express = require("express");
+
+const app = express();
+const port = 4200;
+
+const rateLimiter = (req, res, next) => {
+    const userIP = req.ip;
+    const currentTime = Date.now();
+    const windowTime = 60000 // 1 min
+    const maxRequest = 5;
+
+
+    if (!global.rateRequestCache) global.rateRequestCache = {};
+
+    if (!global.rateRequestCache[userIP]) global.rateRequestCache[userIP] = [];
+
+    global.rateRequestCache[userIP] = global.rateLimiter[userIP]
+        .filter(timeStamp => currentTime - timeStamp < windowTime)
+
+    if (global.rateRequestCache[userIP].length >= maxRequest) {
+        return res.status(429).send("Too many request");
+    }
+    global.rateLimiter[userIP].push(currentTime);
+
+    next();
+}
+
+///
+// using recursion
+
+async function retry(fn, retries = 3, delay = 1000) {
+    try {
+        return await fn();
+    } catch (error) {
+        console.log(Attempt failed: ${ error.message });
+        if (retries === 1) return;
+        await new Promise(res => setTimeout(res, delay));
+        return retry(fn, retries - 1, delay * 2);
+    }
+}
+
+// Example usage
+retry(() => {
+    console.log('Trying...');
+    throw new Error('Failed attempt');
+})
+    .then(() => console.log('Success'))
+    .catch(error => console.error('Failed after 3 retries:', error));
+
+///
+const routes = {
+    '/': () => console.log('Home'),
+    '/about': () => console.log('About'),
+    '/contact': () => console.log('Contact'),
+}
+
+function router() {
+    const path = window.location.hash.replace('#', '') || '/';
+    if (routes[path]) routes[path]();
+    else console.log('404 Page');
+}
+
+
+window.addEventListener('hashchange', router);
+window.addEventListener('load', router);
+
+// Usage: Change the URL hash to #/about or #/contact
+
+//
+function toBinary(number) {
+    return (number >>> 0).toString(2).padStart(32, '0');
+}
+
+let integer = 1;
+let binary = toBinary(integer);
+console.log(integer, binary)
+integer = integer << 1;
+binary = toBinary(integer);
+console.log(integer, binary)
+

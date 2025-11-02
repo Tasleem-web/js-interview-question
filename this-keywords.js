@@ -68,7 +68,7 @@ const obj = {
 }
 
 
-obj.x();
+obj.x(); 
 obj.z()
 
 // inside DOM this keyword will be where it called like if I alert on html button element then this will be htmlelement only
