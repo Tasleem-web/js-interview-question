@@ -11,6 +11,7 @@ const debounce = (callback, delay) => {
 }
 
 input.addEventListener('keydown', () => debounce(apiCall, 1000));
+
 let throttleTimer;
 const throttle = (callback, delay) => {
     if (throttleTimer) return;
@@ -49,26 +50,6 @@ console.log("copiedObj", copiedObj);
 // console.log("added arr", arr);
 // console.log("copiedArr", copiedArr);
 
-
-// String.prototype.capitalize = function () {
-//     let str = String(this).split(" ");
-//     let strArr = [];
-//     for (let i = 0; i < str.length; i++) {
-//         let firstChar = str[i].charAt(0);
-//         if (firstChar.charCodeAt() >= 97 || firstChar.charCodeAt() <= 122) {
-//             strArr.push(firstChar.toUpperCase() + str[i].slice(1, str[i].length));
-//             // strArr.push(firstChar.toUpperCase() + str[i].substr(1, str[i].length - 1));
-//         }
-//     }
-//     return strArr.join(' ')
-// }
-
-// String.prototype.capitalize = function () {
-//     return this.charAt(0).toUpperCase() + this.slice(1);
-// }
-
-
-// console.log(('this is my world').capitalize());
 
 // const firstDuplicate = arr => {
 //     for (let i = 1; i <= arr.length; i++) {
@@ -1087,134 +1068,6 @@ const tasks = [
 promisePool(tasks, 2).then(console.log); // [1,2,3]
 
 
-
-// Polyfill for Promise.all
-Promise.myAll = function (promises) {
-    return new Promise((resolve, reject) => {
-        if (!Array.isArray(promises)) {
-            return reject(new TypeError("Argument must be an array"));
-        }
-
-        let results = [];
-        let completedPromises = 0;
-
-        promises.forEach((promise, index) => {
-            Promise.resolve(promise)
-                .then(value => {
-                    results[index] = value;
-                    completedPromises++;
-                    if (completedPromises === promises.length) {
-                        resolve(results);
-                    }
-                })
-                .catch(reject);
-        });
-
-        if (promises.length === 0) {
-            resolve(results);
-        }
-    });
-};
-
-// Example usage
-const promise1 = Promise.resolve(3);
-const promise2 = 42;
-const promise3 = new Promise((resolve, reject) => {
-    setTimeout(reject, 100, 'foo');
-});
-
-Promise.myAll([promise1, promise2, promise3])
-    .then(results => console.log(results)) // [3, 42, 'foo'] 
-    .catch(error => console.error(error));
-
-// Polyfill for Promise.any
-Promise.myAny = function (promises) {
-    return new Promise((resolve, reject) => {
-        if (!Array.isArray(promises)) {
-            return reject(new TypeError("Argument must be an array"));
-        }
-
-        let errors = [];
-        let rejectedPromises = 0;
-
-        promises.forEach((promise, index) => {
-            Promise.resolve(promise)
-                .then(resolve)
-                .catch(error => {
-                    errors[index] = error;
-                    rejectedPromises++;
-                    if (rejectedPromises === promises.length) {
-                        reject(new AggregateError(errors, "All promises were rejected"));
-                    }
-                });
-        });
-
-        if (promises.length === 0) {
-            reject(new AggregateError([], "All promises were rejected"));
-        }
-    });
-};
-
-// Polyfill for Promise.race
-Promise.myRace = function (promises) {
-    return new Promise((resolve, reject) => {
-        if (!Array.isArray(promises)) {
-            return reject(new TypeError("Argument must be an array"));
-        }
-
-        promises.forEach(promise => {
-            Promise.resolve(promise).then(resolve).catch(reject);
-        });
-    });
-};
-
-// Polyfill for Promise.allSettled
-Promise.myAllSettled = function (promises) {
-    return new Promise((resolve) => {
-        if (!Array.isArray(promises)) {
-            throw new TypeError("Argument must be an array");
-        }
-
-        let results = [];
-        let completedPromises = 0;
-
-        promises.forEach((promise, index) => {
-            Promise.resolve(promise)
-                .then(value => {
-                    results[index] = { status: "fulfilled", value };
-                })
-                .catch(reason => {
-                    results[index] = { status: "rejected", reason };
-                })
-                .finally(() => {
-                    completedPromises++;
-                    if (completedPromises === promises.length) {
-                        resolve(results);
-                    }
-                });
-        });
-
-        if (promises.length === 0) {
-            resolve(results);
-        }
-    });
-};
-
-// Example usage
-const promise1 = Promise.resolve(3);
-const promise2 = Promise.reject("Error");
-const promise3 = new Promise((resolve) => setTimeout(resolve, 100, "foo"));
-
-Promise.myAny([promise1, promise2, promise3])
-    .then(result => console.log("myAny:", result)) // 3
-    .catch(error => console.error("myAny:", error));
-
-Promise.myRace([promise1, promise3])
-    .then(result => console.log("myRace:", result)) // 3
-    .catch(error => console.error("myRace:", error));
-
-Promise.myAllSettled([promise1, promise2, promise3])
-    .then(results => console.log("myAllSettled:", results));
 // [
 //   { status: "fulfilled", value: 3 },
 //   { status: "rejected", reason: "Error" },
@@ -1350,7 +1203,7 @@ function chunkArray(arr, size) {
     return chunks;
 }
 
-
+// 
 function maxDigitSumLessThan(num) {
     let maxSum = 0;
     let result = num - 1;
@@ -1436,6 +1289,10 @@ class TimeTolive {
             return null
         }
     }
+
+    delete(key) {
+        this.cache.delete(key);
+    }
 }
 
 
@@ -1443,6 +1300,40 @@ const cache = new TimeTolive(5000); // TTL of 5 seconds
 cache.set('foo', 'bar');
 console.log(cache.get('foo')); // Output: 'bar'
 setTimeout(() => console.log(cache.get('foo')), 6000); // Output: null (expired)
+
+// ITransition
+
+class TTLCache {
+  constructor() {
+    this.map = new Map();
+  }
+
+  set(key: string, value: any, ttlMs: number) {
+    const now = new Date().getTime();
+    console.log(now + ttlms);
+    this.map.add(key, { value, now });
+  }
+
+  get(key: string) {
+    const currentTime = new Date().getTime();
+    if (this.map.has(key) && map.get(key).now > currentTime) {
+    }
+  }
+
+  delete(key: string) {
+    // if (map.has(key)) return map.get(key);
+    // else{
+    map.delete(key);
+    // }
+  }
+}
+
+let cache = new TTLCache();
+
+cache.set("user:123", { name: "Alice" }, 5000); // live 5 seconds
+cache.get("user:123"); // → { name: "Alice" }
+setTimeout(() => cache.get("user:123"), 6000); // → undefined (expired)
+
 
 //
 if (!String.prototype.capitalize) {
@@ -1455,7 +1346,7 @@ if (!String.prototype.capitalize) {
 
     }
 }
-console.log("this is epam system infosys".capitalize());
+console.log("this is epam system".capitalize());
 
 // composition function
 
@@ -1490,22 +1381,22 @@ function deepCopy(obj, map = new Map()) {
     // if the obj is Array
     if (obj instanceof Array) {
         const copy = [];
-        map.set(obj, copy);
         obj.forEach((item, index) => {
             copy[index] = deepCopy(item, map);
         });
+        map.set(obj, copy);
         return copy;
     }
 
     // if the obj is object
     if (obj instanceof Object) {
         const copy = {};
-        map.set(obj, copy);
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
                 copy[key] = deepCopy(obj[key], map);
             }
         }
+        map.set(obj, copy);
         return copy;
     }
 
@@ -1545,7 +1436,7 @@ const original = {
     employees: ['Alex', 'John', 'Jane'],
     date: new Date(),
     greet: function () {
-        console.log(Company name: ${ this.name });
+        console.log(`Company name: ${this.name}`);
     }
 }
 
@@ -1672,7 +1563,7 @@ function digitSum(num) {
 
 // Example usage:
 let number = 999; // You can change this to any number
-console.log(The digit sum of ${ number } is ${ digitSum(number) });
+console.log(`The digit sum of ${number} is ${digitSum(number)}`);
 
 function largestNumberWithMaxDigitSum(digits) {
     let number = '9'.repeat(digits);
@@ -1682,8 +1573,8 @@ function largestNumberWithMaxDigitSum(digits) {
 // Example usage:
 let digits = 3; // Number of digits
 let largestNumber = largestNumberWithMaxDigitSum(digits);
-console.log(The largest number with ${ digits } digits is ${ largestNumber });
-console.log(The digit sum of ${ largestNumber } is ${ digitSum(largestNumber) });
+console.log(`The largest number with ${digits} digits is ${largestNumber}`);
+console.log(`The digit sum of ${largestNumber} is ${digitSum(largestNumber)}`);
 
 //
 
@@ -1749,7 +1640,7 @@ console.log(memoize(5, 10));// cache value
 
 //
 
-const pipe = (...fns) => (initialValue) => fns.reduce((acc, fn) => fn(acc), initialValue)
+const pipe = (...fns) => (initialValue) => fns.reduce((acc, fn) => fn(acc), initialValue);
 const add = (x) => x + 2; // 10 +2 =12
 const sub = (x) => x - 3; // 12 -3 = 9
 const mul = (x) => x * 2; // 9 * 2 = 18
@@ -1757,161 +1648,6 @@ const mul = (x) => x * 2; // 9 * 2 = 18
 const pipeFn = pipe(add, sub, mul)(10);
 
 console.log(pipeFn);
-
-//
-
-function customPromiseAll(promises) {
-    return new Promise((resolve, reject) => {
-        //  store promises
-        let result = [];
-        // count the resolved promise
-        let completedPromises = 0;
-
-        // make loop to resolve the promise
-        promises.forEach((promise, index) => {
-            // need the promise to resolve the iterable promise
-            Promise.resolve(promise).then(resp => {
-                result[index] = resp;
-                completedPromises++;
-
-                //  check if completedPromises is equal to promise.length
-                if (completedPromises == promises.length) {
-                    resolve(result);
-                }
-            })
-                .catch(reject);
-        })
-    })
-}
-
-let promise1 = Promise.resolve(3);
-let promise2 = Promise.reject('Error occured');
-let promise3 = Promise.resolve(5);
-
-customPromiseAll([promise1, promise2, promise3])
-    .then((values) => {
-        console.log(values);
-    })
-    .catch((error) => {
-        console.error(error); // "Error occurred"
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function customPromiseAll(promises) {
-//     return new Promise((resolve, reject) => {
-//         let results = [];
-//         let completedPromises = 0;
-//         promises.forEach((promise, index) => {
-//            Promise.resolve(promise)
-//              .then((value) => {
-//                 results[index] = value;
-//                 completedPromises += 1;
-//                 if(promises.length === completedPromises) resolve(results);
-//             })
-//             .catch(err => reject(err))
-//         })
-//         if(promises.length === 0) resolve(results)
-//     })
-// }
-
-// let promise1 = Promise.resolve(3);
-// let promise2 = Promise.reject('Error occured');
-// let promise3 = new Promise((resolve, reject) => {
-//   setTimeout(resolve, 100, 'foo');
-// });
-
-// customPromiseAll([promise1, promise2, promise3])
-//   .then((values) => {
-//     console.log(values);
-//   })
-//   .catch((error) => {
-//     console.error(error); // "Error occurred"
-//   });
-
-//
-function customPromiseRace(promises) {
-    return new Promise((resolve, reject) => {
-        promises.forEach((promise, index) => {
-            Promise.resolve(promise).then(resolve).catch(reject);
-        })
-    })
-}
-
-let promise1 = Promise.resolve(3);
-let promise2 = Promise.reject('Error occured.');
-
-customPromiseRace([promise2, promise1])
-    .then(data => console.log(data))
-    .catch(err => console.log(err))
-//
-function customPromiseAny(promises) {
-    return new Promise((resolve, reject) => {
-        let errors = [];
-        let rejectedPromises = 0;
-
-        promises.forEach((promise, index) => {
-            Promise.resolve(promise)
-                .then((value) => {
-                    resolve(value); // Resolve as soon as one promise resolves
-                })
-                .catch((error) => {
-                    errors[index] = error;
-                    rejectedPromises += 1;
-
-                    if (rejectedPromises === promises.length) {
-                        reject(new AggregateError(errors, "All promises were rejected"));
-                    }
-                });
-        });
-
-        if (promises.length === 0) {
-            reject(new AggregateError([], "All promises were rejected"));
-        }
-    });
-}
-
-// Example usage:
-let promise1 = new Promise((resolve, reject) => {
-    setTimeout(reject, 100, 'Error 1');
-});
-let promise2 = new Promise((resolve, reject) => {
-    setTimeout(reject, 200, 'Error 2');
-});
-let promise3 = new Promise((resolve, reject) => {
-    setTimeout(resolve, 300, 'Success');
-
-    customPromiseAny([promise3, promise1, promise2])
-        .then((value) => {
-            console.log(value); // "Success"
-        })
-        .catch((error) => {
-            console.error(error.errors); // ["Error 1", "Error 2"]
-        });
-})
 
 ///
 class PubSub {
@@ -1942,7 +1678,7 @@ class PubSub {
 }
 
 const pubSub = new PubSub();
-const onMessage = (data) => console.log(Recieved message ${ data });
+const onMessage = (data) => console.log(`Recieved message ${data}`);
 const event = 'message';
 pubSub.subscriber(event, onMessage)
 pubSub.publish(event, 'Hello PubSub');
@@ -1985,7 +1721,7 @@ async function retry(fn, retries = 3, delay = 1000) {
     try {
         return await fn();
     } catch (error) {
-        console.log(Attempt failed: ${ error.message });
+        console.log(`Attempt failed: ${error.message}`);
         if (retries === 1) return;
         await new Promise(res => setTimeout(res, delay));
         return retry(fn, retries - 1, delay * 2);
@@ -2031,3 +1767,16 @@ integer = integer << 1;
 binary = toBinary(integer);
 console.log(integer, binary)
 
+// removeAdjacentDuplicates
+function removeAdjacentDuplicates(str) {
+    const stack = [];
+    for (const char of str) {
+        if (stack.length && stack[stack.length - 1] === char) {
+            stack.pop();
+        } else {
+            stack.push(char);
+        }
+    }
+    return stack.join('');
+}
+console.log(removeAdjacentDuplicates("abbaca")); // Output: "ca"

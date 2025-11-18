@@ -31,6 +31,19 @@ Array.prototype.myMap = function (callback) {
 // // let result = arr.myMap(item => Math.sqrt(item));
 // console.log(result);
 
+Array.prototype.mySome = function (callback) {
+    for (let i = 0; i < this.length; i++) {
+        if (callback(this[i], i, this)) {
+            return true;
+        }
+    }
+    return false;
+}
+// let arr = [1, 2, 3, 4, 5];
+// let result = arr.mySome(item => item > 4);
+// console.log(result);
+
+
 
 Array.prototype.myFilter = function (callback) {
     let newArr = [];
@@ -137,3 +150,170 @@ let arr = [1, 2, 3, [4, 5, [6]]];
 let result = arr.myFlat(2);
 console.log(result);
 
+// Custom bind function
+Function.prototype.myBind = function (context, ...args) {
+    const func = this;
+    return function (...innerArgs) {
+        return func.apply(context, [...args, ...innerArgs]);
+    }
+}
+
+Function.prototype.myApply = function (context, args) {
+    context = context || globalThis;
+    const fnSymbol = Symbol();
+    context[fnSymbol] = this;
+    const result = context[fnSymbol](...args);
+    delete context[fnSymbol];
+    return result;
+}
+
+// Async Generator Function Polyfill
+function asyncGeneratorPolyfill(genFunc) {
+    return function (...args) {
+        const genObject = genFunc(...args);
+        return new Promise((resolve, reject) => {
+            function step(nextF) {
+                let next;
+                try {
+                    next = nextF();
+                } catch (e) {
+                    return reject(e);
+                }
+                if (next.done) {
+                    return resolve(next.value);
+                }
+                Promise.resolve(next.value).then(v => {
+                    step(() => genObject.next(v));
+                }).catch(e => {
+                    step(() => genObject.throw(e));
+                });
+            }
+            step(() => genObject.next(undefined));
+        });
+    };
+}
+// Example usage of asyncGeneratorPolyfill
+// const asyncGenFunc = asyncGeneratorPolyfill(function* () {
+//     const data1 = yield fetch('https://jsonplaceholder.typicode.com/posts/1').then(res => res.json());
+//     console.log('Data 1:', data1);
+//     const data2 = yield fetch('https://jsonplaceholder.typicode.com/posts/2').then(res => res.json());
+//     console.log('Data 2:', data2);
+//     return 'All data fetched';
+// });
+// asyncGenFunc().then(result => console.log(result)).catch(err => console.error(err));
+
+
+
+// Example usage of myBind
+// function greet(greeting, punctuation) {
+//     return `${greeting}, ${this.name}${punctuation}`;
+// }
+// const person = { name: 'Alice' };
+// const boundGreet = greet.myBind(person, 'Hello');
+// console.log(boundGreet('!')); // Output: "Hello, Alice!"
+
+// polyfill  all
+Promise.myAll = function (promises) {
+    return new Promise((resolve, reject) => {
+        let results = [];
+        let pending = promises.length;
+        promises.forEach((promise, index) => {
+            Promise.resolve(promise)
+                .then(value => {
+                    results[index] = value;
+                    pending--;
+                    if (pending === 0) {
+                        resolve(results);
+                    }
+                })
+                .catch(reason => {
+                    reject(reason);
+                });
+        });
+    });
+}
+
+// let p1 = Promise.resolve('Success 1');
+// let p2 = Promise.resolve('Success 2');
+// let p3 = Promise.resolve('Success 3');
+
+// Promise.myAll([p1, p2, p3])
+//     .then(results => console.log('All Results:', results))
+//     .catch(error => console.log('Error:', error));
+
+// promise any polyfill 
+Promise.myAny = function (promises) {
+    return new Promise((resolve, reject) => {
+        let rejections = [];
+        let pending = promises.length;
+        promises.forEach((promise, index) => {
+            Promise.resolve(promise)
+                .then(value => {
+                    resolve(value);
+                }).catch(error => {
+                    rejections[index] = error;
+                    pending--;
+                    if (pending === 0) {
+                        reject(new AggregateError(rejections, 'All promises were rejected'));
+                    }
+                });
+        });
+    });
+}
+
+// let p1 = Promise.reject('Error 1');
+// let p2 = Promise.reject('Error 2');
+// let p3 = Promise.resolve('Success 3');
+
+// Promise.myAny([p1, p2, p3])
+//     .then(value => console.log('Resolved with value:', value))
+//     .catch(error => console.log('Rejected with errors:', error.errors)); 
+
+
+// polyfill race 
+Promise.myRace = function (promises) {
+    return new Promise((resolve, reject) => {
+        promises.forEach(promise => {
+            Promise.resolve(promise)
+                .then(value => resolve(value))
+                .catch(error => reject(error));
+        });
+    });
+}
+
+// let p1 = new Promise((resolve, reject) => setTimeout(reject, 500, 'Error 1'));
+// let p2 = new Promise((resolve, reject) => setTimeout(resolve, 100, 'Success 2'));
+// let p3 = new Promise((resolve, reject) => setTimeout(resolve, 200, 'Success 3'));
+// Promise.myRace([p1, p2, p3])
+//     .then(value => console.log('Resolved with value:', value))
+//     .catch(error => console.log('Rejected with error:', error));
+
+// polyfill allSettled
+Promise.myAllSettled = function (promises) {
+    return new Promise((resolve) => {
+        let results = [];
+        let pending = promises.length;
+        promises.forEach((promise, index) => {
+            Promise.resolve(promise)
+                .then(value => {
+                    results[index] = { status: 'fulfilled', value: value };
+                })
+                .catch(reason => {
+                    results[index] = { status: 'rejected', reason: reason };
+                })
+                .finally(() => {
+                    pending--;
+                    if (pending === 0) {
+                        resolve(results);
+                    }
+                });
+        });
+    });
+}
+
+// let p1 = Promise.resolve('Success 1');
+// let p2 = Promise.reject('Error 2');
+// let p3 = Promise.resolve('Success 3');
+
+// Promise.myAllSettled([p1, p2, p3])
+//     .then(results => console.log('All Settled Results:', results));
